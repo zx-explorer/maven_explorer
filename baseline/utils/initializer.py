@@ -28,7 +28,7 @@ def initialize(config, device):
     parameters["dataset_test"] = DataLoader(dataset=dataset_test, batch_size=batch_size, shuffle=shuffle, collate_fn=collate_fn_decr("test"))
 
     # if config.has_option("data", "BERT"):
-        # parameters["model"] = 
+        # parameters["model"] =
     # else:
     parameters["model"] = get_class("model", config.get("model", "model_name"))(config)
     parameters["model"] = parameters["model"].to(device)
