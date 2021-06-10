@@ -15,7 +15,7 @@ class BertCrfFormatter(object):
                   "masks": LongTensor,
                   "lengths": LongTensor}
         """
-        tokens, token_type_ids, canids, labels, flags, masks, lengths, docids, attention_masks = [], [], [], [], [], [], [], [], []
+        tokens, token_type_ids, canids, labels, flags, masks, lengths, docids = [], [], [], [], [], [], [], []
 
         sequence_length = self.config.getint("runtime", "sequence_length")
 
@@ -27,7 +27,6 @@ class BertCrfFormatter(object):
             )
             token = token_info['input_ids'][1:-1]
             token_type = token_info["token_type_ids"][1:-1]
-            attention_mask = [1] * len(token)
             canid_ = item["canids"]
             if mode != "test":
                 label = item["labels"]
@@ -42,7 +41,6 @@ class BertCrfFormatter(object):
                 canid_ = canid_[:sequence_length]
                 flag = flag[:sequence_length]
             token += [0] * (sequence_length - len(token))
-            attention_mask += [0] * (sequence_length - len(attention_mask))
             label += [self.pad_label_id] * (sequence_length - length)
             canid = []
             for i in range(len(flag)):
@@ -60,7 +58,6 @@ class BertCrfFormatter(object):
             canids.append(canid)
             labels.append(label)
             flags.append(flag)
-            attention_masks.append(attention_mask)
             # 问题在于这个mask是什么？
             masks.append([1] * length + [0] * (sequence_length - length))
             lengths.append(length)
@@ -74,21 +71,13 @@ class BertCrfFormatter(object):
         token_type_ids = tlt(token_type_ids)
         labels = tlt(labels)
         masks = tlt(masks)
-        attention_masks = tlt(attention_masks)
         lengths = tlt(lengths)
-        print(tokens.shape)
-        print(labels.shape)
-        print(token_type_ids.shape)
-        print(masks.shape)
-        print(attention_masks.shape)
-        print(lengths.shape)
 
         return {"tokens": tokens,
                 "token_type_ids": token_type_ids,
                 "labels": labels,
                 "flags": flags,
                 "masks": masks,
-                "attention_masks": attention_masks,
                 "lengths": lengths,
                 "canids": canids,
                 "docids": docids}
