@@ -31,8 +31,8 @@ class BertCrfFormatter(object):
             canid_.insert(len(canid_), '')
             if mode != "test":
                 label = item["labels"]
-                label.insert(0, self.pad_label_id)
-                label.insert(len(label), self.pad_label_id)
+                label.insert(0, 0)
+                label.insert(len(label), 0)
             else:
                 label = [0] * len(token)
             if "flags" in item:
