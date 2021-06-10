@@ -21,7 +21,7 @@ class BertCrfFormatter(object):
 
         for item in data:
             docid = item["docids"]
-            length = len(item["tokens"])
+            length = min(len(item["tokens"]), sequence_length)
             token_info = Global.tokenizer.encode_plus(
                 item["tokens"], add_special_tokens=True, max_length=sequence_length + 2, return_token_type_ids=True
             )
