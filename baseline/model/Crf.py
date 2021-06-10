@@ -55,6 +55,7 @@ class Crf(nn.Module):
             prediction = self.hidden2tag(prediction)    # [B, L, N+2]
         else:
             prediction = self.bert(input_ids=tokens, attention_mask=attention_bert_masks, token_type_ids=token_type_ids)
+            print(prediction.shape)
             prediction = self.hidden2tag(prediction)
 
         pad_masks = (labels != self.pad_label_id)

@@ -25,8 +25,8 @@ class BertCrfFormatter(object):
             token_info = Global.tokenizer.encode_plus(
                 item["tokens"], add_special_tokens=True, max_length=sequence_length + 2, return_token_type_ids=True
             )
-            token = token_info['input_ids']
-            token_type = token_info["token_type_ids"]
+            token = token_info['input_ids'][1:-1]
+            token_type = token_info["token_type_ids"][1:-1]
             attention_mask = [1] * len(token)
             canid_ = item["canids"]
             if mode != "test":
@@ -41,8 +41,8 @@ class BertCrfFormatter(object):
                 label = label[:sequence_length]
                 canid_ = canid_[:sequence_length]
                 flag = flag[:sequence_length]
-            token += [0] * (sequence_length + 2 - len(token))
-            attention_mask += [0] * (sequence_length + 2 - len(attention_mask))
+            token += [0] * (sequence_length - len(token))
+            attention_mask += [0] * (sequence_length - len(attention_mask))
             label += [self.pad_label_id] * (sequence_length - length)
             canid = []
             for i in range(len(flag)):
@@ -53,7 +53,7 @@ class BertCrfFormatter(object):
             for i in range(sequence_length):
                 if i < length and flag[i] == 1:
                     assert label[i] != self.pad_label_id
-            token_type += [0] * (sequence_length + 2 - len(token_type))
+            token_type += [0] * (sequence_length - len(token_type))
             token_type_ids.append(token_type)
             docids.append(docid)
             tokens.append(token)
@@ -76,6 +76,12 @@ class BertCrfFormatter(object):
         masks = tlt(masks)
         attention_masks = tlt(attention_masks)
         lengths = tlt(lengths)
+        print(tokens.shape)
+        print(labels.shape)
+        print(token_type_ids.shape)
+        print(masks.shape)
+        print(attention_masks.shape)
+        print(lengths.shape)
 
         return {"tokens": tokens,
                 "token_type_ids": token_type_ids,
