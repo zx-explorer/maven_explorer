@@ -31,8 +31,8 @@ class BertCrfFormatter(object):
             canid_.insert(len(canid_), '')
             if mode != "test":
                 label = item["labels"]
-                label.insert(0, 0)
-                label.insert(len(label), 0)
+                label.insert(0, self.pad_label_id)
+                label.insert(len(label), self.pad_label_id)
             else:
                 label = [0] * len(token)
             if "flags" in item:
@@ -43,6 +43,7 @@ class BertCrfFormatter(object):
                 flag = [1] * len(token)
             if len(token) > sequence_length:
                 token = token[:sequence_length]
+                token_type = token_type[:sequence_length]
                 canid_ = canid_[:sequence_length]
                 label = label[:sequence_length]
                 flag = flag[:sequence_length]
