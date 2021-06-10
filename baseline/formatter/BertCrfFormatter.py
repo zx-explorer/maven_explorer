@@ -46,7 +46,7 @@ class BertCrfFormatter(object):
                 token_type = token_type[:sequence_length]
                 canid_ = canid_[:sequence_length]
                 flag = flag[:sequence_length]
-            if len(labels) > sequence_length:
+            if len(label) > sequence_length:
                 label = label[:sequence_length]
             length = len(token)
             token += [0] * (sequence_length - length)
