@@ -15,38 +15,34 @@ class BertCrfFormatter(object):
                   "masks": LongTensor,
                   "lengths": LongTensor}
         """
-        tokens, token_type_ids, canids, labels, flags, masks, lengths, docids = [], [], [], [], [], [], [], []
+        tokens, token_type_ids, canids, labels, flags, masks, lengths, docids, attention_masks = [], [], [], [], [], [], [], [], []
 
         sequence_length = self.config.getint("runtime", "sequence_length")
 
         for item in data:
             docid = item["docids"]
+            length = len(item["tokens"])
             token_info = Global.tokenizer.encode_plus(
-                item["tokens"], add_special_tokens=True, max_length=sequence_length, return_token_type_ids=True
+                item["tokens"], add_special_tokens=True, max_length=sequence_length + 2, return_token_type_ids=True
             )
             token = token_info['input_ids']
             token_type = token_info["token_type_ids"]
+            attention_mask = [1] * len(token)
             canid_ = item["canids"]
-            canid_.insert(0, '')
-            canid_.insert(len(canid_), '')
             if mode != "test":
                 label = item["labels"]
-                label.insert(0, 0)
-                label.insert(len(label), 0)
             else:
                 label = [0] * len(token)
             if "flags" in item:
                 flag = item['flags']
-                flag.insert(0, 0)
-                flag.insert(len(flag), 0)
             else:
                 flag = [1] * len(token)
             if len(label) > sequence_length:
                 label = label[:sequence_length]
                 canid_ = canid_[:sequence_length]
                 flag = flag[:sequence_length]
-            length = len(token)
-            token += [0] * (sequence_length - length)
+            token += [0] * (sequence_length + 2 - len(token))
+            attention_mask += [0] * (sequence_length + 2 - len(attention_mask))
             label += [self.pad_label_id] * (sequence_length - length)
             canid = []
             for i in range(len(flag)):
@@ -57,13 +53,14 @@ class BertCrfFormatter(object):
             for i in range(sequence_length):
                 if i < length and flag[i] == 1:
                     assert label[i] != self.pad_label_id
-            token_type += [0] * (sequence_length - length)
+            token_type += [0] * (sequence_length + 2 - len(token_type))
             token_type_ids.append(token_type)
             docids.append(docid)
             tokens.append(token)
             canids.append(canid)
             labels.append(label)
             flags.append(flag)
+            attention_masks.append(attention_mask)
             # 问题在于这个mask是什么？
             masks.append([1] * length + [0] * (sequence_length - length))
             lengths.append(length)
@@ -77,6 +74,7 @@ class BertCrfFormatter(object):
         token_type_ids = tlt(token_type_ids)
         labels = tlt(labels)
         masks = tlt(masks)
+        attention_masks = tlt(attention_masks)
         lengths = tlt(lengths)
 
         return {"tokens": tokens,
@@ -84,6 +82,7 @@ class BertCrfFormatter(object):
                 "labels": labels,
                 "flags": flags,
                 "masks": masks,
+                "attention_masks": attention_masks,
                 "lengths": lengths,
                 "canids": canids,
                 "docids": docids}

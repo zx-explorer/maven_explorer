@@ -40,6 +40,8 @@ class Crf(nn.Module):
         lengths = data["lengths"]       # [B, ]
         flags = data["flags"]
         attention_masks = data["masks"] # [B, L]
+        if self.config.has_option("data", "BERT"):
+            attention_bert_masks = data["attention_masks"]
 
         if self.config.has_option("data", "BERT"):
             token_type_ids = data['token_type_ids']
@@ -52,9 +54,9 @@ class Crf(nn.Module):
             # 这里多出的两个num_class到底对应的是什么类以及是什么含义？
             prediction = self.hidden2tag(prediction)    # [B, L, N+2]
         else:
-            prediction = self.bert(input_ids=tokens, attention_mask=attention_masks, token_type_ids=token_type_ids)
+            prediction = self.bert(input_ids=tokens, attention_mask=attention_bert_masks, token_type_ids=token_type_ids)
             prediction = self.hidden2tag(prediction)
-        # 实际上这两个mask是相同的（对于crf_train来说）
+
         pad_masks = (labels != self.pad_label_id)
         loss_masks = ((attention_masks == 1) & pad_masks)
 
