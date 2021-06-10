@@ -111,16 +111,23 @@ class MavenReader(object):
         }
         """
 
-        embedding_dict = self.load_embedding_dict(os.path.join(self.raw_dir, self.word2vec_source_file))
-
-        processed_data = {"info_train": [],
-                          "info_valid": [],
-                          "info_test": [],
-                          "word2id": {},
-                          "id2word": {},
-                          "label2id": {},
-                          "id2label": {},
-                          "sequence_length": 0}
+        if not self.config.has_option("data", "BERT"):
+            embedding_dict = self.load_embedding_dict(os.path.join(self.raw_dir, self.word2vec_source_file))
+            processed_data = {"info_train": [],
+                            "info_valid": [],
+                            "info_test": [],
+                            "word2id": {},
+                            "id2word": {},
+                            "label2id": {},
+                            "id2label": {},
+                            "sequence_length": 0}
+        else:
+            processed_data = {"info_train": [],
+                            "info_valid": [],
+                            "info_test": [],
+                            "label2id": {},
+                            "id2label": {},
+                            "sequence_length": 0}
 
         # BIO 是什么？以及O是什么类型……
         if self.config.has_option("data", "BIO"):
