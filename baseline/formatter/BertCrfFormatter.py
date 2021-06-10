@@ -76,16 +76,11 @@ class BertCrfFormatter(object):
         tlt = lambda t: torch.LongTensor(t)
         tt = lambda t: torch.Tensor(t)
 
-        print("------------------labels_info_show--------------------")
-        print(type(labels))
-        print(len(labels))
-        print(len(labels[0]))
         tokens = tlt(tokens)
         token_type_ids = tlt(token_type_ids)
         labels = tlt(labels)
         masks = tlt(masks)
         lengths = tlt(lengths)
-        print("------------------labels_info_show_end--------------------")
 
         return {"tokens": tokens,
                 "token_type_ids": token_type_ids,
