@@ -22,7 +22,7 @@ class BertCrfFormatter(object):
         for item in data:
             docid = item["docids"]
             token_info = Global.tokenizer.encode_plus(
-                item["tokens"], add_special_task=True, max_length=sequence_length, return_token_type_ids=True
+                item["tokens"], add_special_tokens=True, max_length=sequence_length, return_token_type_ids=True
             )
             token = token_info['input_ids']
             token_type = token_info["token_type_ids"]
@@ -41,13 +41,10 @@ class BertCrfFormatter(object):
                 flag.insert(len(flag), 0)
             else:
                 flag = [1] * len(token)
-            if len(token) > sequence_length:
-                token = token[:sequence_length]
-                token_type = token_type[:sequence_length]
-                canid_ = canid_[:sequence_length]
-                flag = flag[:sequence_length]
             if len(label) > sequence_length:
                 label = label[:sequence_length]
+                canid_ = canid_[:sequence_length]
+                flag = flag[:sequence_length]
             length = len(token)
             token += [0] * (sequence_length - length)
             label += [self.pad_label_id] * (sequence_length - length)
