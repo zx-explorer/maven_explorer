@@ -1,0 +1,21 @@
+python3 run_ee.py \
+    --data_dir ../maven/ \ 
+    --model_type bert \
+    --model_name_or_path ./MAVEN/checkpoint-2500 \ 
+    --task_name maven_infer \
+    --output_dir ./MAVEN \ 
+    --max_seq_length 128 \
+    --do_lower_case \
+    --per_gpu_train_batch_size 42 \
+    --per_gpu_eval_batch_size 42 \
+    --gradient_accumulation_steps 2 \
+    --learning_rate 5e-5 \
+    --num_train_epochs 5 \
+    --save_steps 500 \
+    --logging_steps 500 \
+    --seed 42 \
+    --do_infer 
+python3 get_submission.py \ 
+    --test_data ../maven/test.jsonl \ 
+    --preds MAVEN/checkpoint-2500/checkpoint-2500_preds.npy \ 
+    --output ./results.jsonl 
