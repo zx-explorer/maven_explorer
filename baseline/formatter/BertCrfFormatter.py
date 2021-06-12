@@ -54,7 +54,6 @@ class BertCrfFormatter(object):
 
             if mode == "test":
                 print(len(label))
-                print("---------------data_info_end-------------")
             token += [0] * (sequence_length - length)
             label += [self.pad_label_id] * (sequence_length - length)
             canid = []
@@ -71,6 +70,9 @@ class BertCrfFormatter(object):
             docids.append(docid)
             tokens.append(token)
             canids.append(canid)
+            if mode == "test":
+                print(len(label))
+                print("---------------data_info_end-------------")
             labels.append(label)
             flags.append(flag)
             # 问题在于这个mask是什么？
