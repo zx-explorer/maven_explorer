@@ -79,6 +79,9 @@ class BertCrfFormatter(object):
         labels = tlt(labels)
         masks = tlt(masks)
         lengths = tlt(lengths)
+        if mode == 'test':
+            print(labels.shape)
+            print(masks.shape)
 
         return {"tokens": tokens,
                 "token_type_ids": token_type_ids,
