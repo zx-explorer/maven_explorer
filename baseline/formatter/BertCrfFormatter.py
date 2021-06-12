@@ -38,8 +38,13 @@ class BertCrfFormatter(object):
                 flag = [1] * len(token)
             if len(label) > sequence_length - 2:
                 label = label[:sequence_length - 2]
+            if len(canid_) > sequence_length - 2:
                 canid_ = canid_[:sequence_length - 2]
+            if len(flag) > sequence_length - 2:
                 flag = flag[:sequence_length - 2]
+            print("---------------data_info-------------")
+            if mode == "test":
+                print(len(label))
             label.insert(0, 0)
             label.insert(len(label), 0)
             canid_.insert(0, '')
@@ -47,6 +52,9 @@ class BertCrfFormatter(object):
             flag.insert(0, 0)
             flag.insert(len(flag), 0)
 
+            if mode == "test":
+                print(len(label))
+            print("---------------data_info_end-------------")
             token += [0] * (sequence_length - length)
             label += [self.pad_label_id] * (sequence_length - length)
             canid = []
@@ -79,9 +87,6 @@ class BertCrfFormatter(object):
         labels = tlt(labels)
         masks = tlt(masks)
         lengths = tlt(lengths)
-        if mode == 'test':
-            print(labels.shape)
-            print(masks.shape)
 
         return {"tokens": tokens,
                 "token_type_ids": token_type_ids,
