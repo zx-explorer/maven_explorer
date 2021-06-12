@@ -37,9 +37,9 @@ class BertCrfFormatter(object):
             else:
                 flag = [1] * len(token)
             if len(label) > sequence_length - 2:
-                label = label[:sequence_length]
-                canid_ = canid_[:sequence_length]
-                flag = flag[:sequence_length]
+                label = label[:sequence_length - 2]
+                canid_ = canid_[:sequence_length - 2]
+                flag = flag[:sequence_length - 2]
             label.insert(0, 0)
             label.insert(len(label), 0)
             canid_.insert(0, '')
