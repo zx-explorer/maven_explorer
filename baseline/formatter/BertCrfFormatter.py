@@ -42,8 +42,8 @@ class BertCrfFormatter(object):
                 canid_ = canid_[:sequence_length - 2]
             if len(flag) > sequence_length - 2:
                 flag = flag[:sequence_length - 2]
-            print("---------------data_info-------------")
             if mode == "test":
+                print("---------------data_info-------------")
                 print(len(label))
             label.insert(0, 0)
             label.insert(len(label), 0)
@@ -54,7 +54,7 @@ class BertCrfFormatter(object):
 
             if mode == "test":
                 print(len(label))
-            print("---------------data_info_end-------------")
+                print("---------------data_info_end-------------")
             token += [0] * (sequence_length - length)
             label += [self.pad_label_id] * (sequence_length - length)
             canid = []
