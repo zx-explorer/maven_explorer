@@ -21,13 +21,13 @@ class BertCrfFormatter(object):
 
         for item in data:
             docid = item["docids"]
-            length = min(len(item["tokens"]), sequence_length)
             token_info = Global.tokenizer.encode_plus(
-                item["tokens"], add_special_tokens=True, max_length=sequence_length + 2, return_token_type_ids=True
+                item["tokens"], add_special_tokens=True, max_length=sequence_length, return_token_type_ids=True
             )
-            token = token_info['input_ids'][1:-1]
-            token_type = token_info["token_type_ids"][1:-1]
+            token = token_info['input_ids']
+            token_type = token_info["token_type_ids"]
             canid_ = item["canids"]
+            length = len(token)
             if mode != "test":
                 label = item["labels"]
             else:
@@ -36,11 +36,18 @@ class BertCrfFormatter(object):
                 flag = item['flags']
             else:
                 flag = [1] * len(token)
-            if len(label) > sequence_length:
+            if len(label) > sequence_length - 2:
                 label = label[:sequence_length]
                 canid_ = canid_[:sequence_length]
                 flag = flag[:sequence_length]
-            token += [0] * (sequence_length - len(token))
+            label.insert(0, 0)
+            label.insert(len(label), 0)
+            canid_.insert(0, '')
+            canid_.insert(len(canid_), '')
+            flag.insert(0, 0)
+            flag.insert(len(flag), 0)
+
+            token += [0] * (sequence_length - length)
             label += [self.pad_label_id] * (sequence_length - length)
             canid = []
             for i in range(len(flag)):
@@ -51,7 +58,7 @@ class BertCrfFormatter(object):
             for i in range(sequence_length):
                 if i < length and flag[i] == 1:
                     assert label[i] != self.pad_label_id
-            token_type += [0] * (sequence_length - len(token_type))
+            token_type += [0] * (sequence_length - length)
             token_type_ids.append(token_type)
             docids.append(docid)
             tokens.append(token)
